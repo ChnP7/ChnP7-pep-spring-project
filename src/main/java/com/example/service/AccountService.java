@@ -21,14 +21,29 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
+    /**
+     * Returns all accounts
+     * @return a list of Account objects
+     */
     public List<Account> getAllAccounts() {
         return accountRepository.getAllAccounts();
     }
 
+    /**
+     * Attempts to log into an account using a username and password.
+     * @param account account object containing login information
+     * @return the account on success, null if not.
+     */
     public Account loginAccount(Account account) {
         return accountRepository.loginAccount(account.getUsername(), account.getPassword());
     }
 
+    /**
+     * Attempts to create a new account. Account creation will fail if username is blank, 
+     * password is less than 4 characters, or username already exists
+     * @param newAccount new Account to create
+     * @return Newly-created account object, or null if unsuccessful
+     */
     @Transactional
     public Account createAccount(Account newAccount) {
 
@@ -49,6 +64,11 @@ public class AccountService {
         return accountRepository.save(newAccount);
     }
 
+    /**
+     * Gets an account by its id
+     * @param id id of account
+     * @return Account object on success, null if not
+     */
     public Account getAccountById (int id) {
         return accountRepository.getAccountById(id);
     }

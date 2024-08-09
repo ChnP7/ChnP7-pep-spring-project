@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.service.AccountService;
 import com.example.service.MessageService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.entity.Account;
 import com.example.entity.Message;
 import com.example.exception.AccountConflictException;
@@ -85,6 +90,24 @@ public class SocialMediaController {
             }
         }
         return messagesByUser;
+    }
+
+    @PatchMapping("/messages/{messageId}")
+    public @ResponseBody int messageUpdateHandler(@PathVariable("messageId") int id, @RequestBody String text) {
+        ObjectMapper mapper = new ObjectMapper();
+        String messageText = "";
+        try {
+            messageText = mapper.readTree(text).get("messageText").asText();
+        }
+        catch(JsonProcessingException e) {
+            System.out.println(e);
+        }
+        return messageService.updateMessage(id, messageText);
+    }
+
+    @DeleteMapping("/messages/{messageId}")
+    public @ResponseBody Integer deleteMessageHandler(@PathVariable("messageId") int id) {
+        return messageService.deleteMessage(id);
     }
 
     @ExceptionHandler(IncorrectLoginException.class)
