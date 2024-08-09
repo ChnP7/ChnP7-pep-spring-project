@@ -25,6 +25,7 @@ import com.example.entity.Message;
 import com.example.exception.AccountConflictException;
 import com.example.exception.AccountRegistrationFailureException;
 import com.example.exception.IncorrectLoginException;
+import com.example.exception.InvalidMessageException;
 import com.example.repository.MessageRepository;
 
 /**
@@ -61,8 +62,7 @@ public class SocialMediaController {
 
     @PostMapping("/messages")
     public @ResponseBody Message newMessageHandler(@RequestBody Message message) {
-        Message newMsg = messageService.createMessage(message);
-        return null;
+        return messageService.createMessage(message);
     }
 
     @GetMapping("/messages")
@@ -102,6 +102,12 @@ public class SocialMediaController {
     @ExceptionHandler(AccountConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public @ResponseBody String handleRegistrationConflict(AccountConflictException e) {
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(InvalidMessageException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody String handleInvalidMessage(InvalidMessageException e) {
         return e.getMessage();
     }
 }

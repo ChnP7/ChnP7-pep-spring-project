@@ -48,6 +48,10 @@ public class AccountService {
         
         return accountRepository.save(newAccount);
     }
+
+    public Account getAccountById (int id) {
+        return accountRepository.getAccountById(id);
+    }
 }
 
 

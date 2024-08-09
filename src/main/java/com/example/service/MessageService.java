@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.entity.Account;
 import com.example.entity.Message;
 import com.example.exception.InvalidMessageException;
 import com.example.repository.MessageRepository;
@@ -14,10 +16,12 @@ import com.example.repository.MessageRepository;
 public class MessageService {
 
     private final MessageRepository messageRepository;
+    private final AccountService accountService;
 
     @Autowired
-    public MessageService(MessageRepository repository) {
+    public MessageService(MessageRepository repository, AccountService accountService) {
         messageRepository = repository;
+        this.accountService = accountService;
     }
 
     @Bean
@@ -30,6 +34,7 @@ public class MessageService {
         return messageRepository.getMessageByID(id);
     }
 
+    @Transactional
     public Message createMessage(Message message) {
         
         if (message.getMessageText().equals("")) {
@@ -39,7 +44,17 @@ public class MessageService {
             throw new InvalidMessageException("Message cannot be more than 255 characters.");
         }
 
-        return null;
+        Account account = accountService.getAccountById(message.getPostedBy());
+        if (account == null) {
+            throw new InvalidMessageException("Message must be posted by a real user");
+        }
         
+        return messageRepository.save(message);
+        
+    }
+
+    @Transactional
+    public Message updateMessage(String messageText) {
+        return null;
     }
 }
